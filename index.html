@@ -1,31 +1,57 @@
 #include <stdio.h>
+#include <time.h>
 
-void floyd (int a[][20], int n)
-{
-int k,i,j;
-for(k=0;k<n;k++)
- for(i=0;i<n;i++)
-  for(j=0;j<n;j++)
-   if(a[i][j] > (a[i][k] + a[k][j]))
-     a[i][j] = (a[i][k] + a[k][j]);
-printf(" All Pairs Shortest Paths:\n");
-for(i=0;i<n;i++)
-{
-for (j=0;j<n;j++)
-printf("%d\t" , a[i][j]);
- printf("\n");
+#define INF 99999
+#define MAX_SIZE 100
+
+void floyd(int n, int graph[MAX_SIZE][MAX_SIZE]) {
+    int i, j, k;
+
+    for (k = 0; k < n; k++) {
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
+                if (graph[i][k] + graph[k][j] < graph[i][j])
+                    graph[i][j] = graph[i][k] + graph[k][j];
+            }
+        }
+    }
 }
-}
 
+int main() {
+    int n, i, j;
+    int graph[MAX_SIZE][MAX_SIZE];
 
-void main()
-{
-int n,a[20][20],i, j ;
-printf("Enter the number of vertices\n");
-scanf("%d", &n);
-printf("Enter the cost adjacency matrix for the graph [999 for no edge, 0 for self loops]: \n");
-for (i=0;i<n;i++)
- for (j=0;j<n;j++)
-  scanf("%d", &a[i][j]);
-floyd(a,n);
+    printf("Enter the number of cities in the network: ");
+    scanf("%d", &n);
+
+    printf("Enter the adjacency matrix of the network (use %d for infinity):\n", INF);
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    // Measure time taken by floyd algorithm
+    clock_t start = clock();
+    floyd(n, graph);
+    clock_t end = clock();
+    double time_taken = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Floyd's algorithm took %f seconds to execute.\n", time_taken);
+
+    // Calculate space complexity
+    size_t space_complexity = sizeof(int) * n * n;
+    printf("Space complexity of Floyd's algorithm: %zu bytes\n", space_complexity);
+
+    printf("Shortest distances between all pairs of cities:\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            if (graph[i][j] == INF)
+                printf("INF ");
+            else
+                printf("%d ", graph[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
 }
